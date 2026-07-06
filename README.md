@@ -6,6 +6,12 @@
 * **Frontend Languages:** HTML, CSS, Javascript (for communicating with api from backend)
 * **Data Storage:** JSON file (`tasks.json`)
 
+## Features Completed
+- Add task
+- View task list
+- Mark task as completed
+- Delete task
+
 ## How to Run
 
 Follow these step to build and run this .NET project (Task Tracker)
