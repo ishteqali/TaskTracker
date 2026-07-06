@@ -29,19 +29,18 @@ Open browser and go to the url: `http://localhost` where application is running
 
 ## Challenges Faced
 
-### 1. Learning .NET web core and trying and testing how all things work (Syntax, Default Objects and Methods, etc)
+1. Learning .NET web core and trying and testing how all things work (Syntax, Default Objects and Methods, etc)
 
-### 2.  
+2. Understanding how Services and Routing Works in ASP.NET
 
 
 ## Improvements Planned
 
-### 1. Adding timestamp and duration to tasks
+1. Adding timestamp and duration to tasks
 
-### 2. Reminder for tasks
+2. Reminder for tasks
 
-### 3. Better GUI
+3. Better GUI
 
-### 4. Adding Sub-tasks
+4. Adding Sub-tasks
 
-### 5. 
