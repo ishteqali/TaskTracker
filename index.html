@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: sans-serif;
-            max-width: 450px;
+            max-width: 650px;
             margin: 40px auto;
             padding: 20px;
             background: #fafafa;
@@ -20,7 +20,7 @@
         .row {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
 
         input[type='text'] {
@@ -46,9 +46,9 @@
         }
 
         li {
-            display: flex;
+            display: grid;
+            grid-template-columns: 30px 1fr 130px 65px;
             align-items: center;
-            justify-content: space-between;
             padding: 10px;
             background: white;
             margin-bottom: 6px;
@@ -57,16 +57,29 @@
             gap: 12px;
         }
 
-        .task-text {
+        input[type='checkbox'] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .del-container {
+            text-align: right;
+        }
+
+        .task-content {
             font-size: 15px;
             word-break: break-word;
             color: #333;
+            text-align: left;
+            padding-right: 10px;
         }
 
         .task-time {
-            font-size: 11px;
+            font-size: 10px;
             color: #777;
-            margin-top: 2px;
+            text-align: left;
         }
 
         .completed {
@@ -78,7 +91,6 @@
             background: #d83b01;
             padding: 6px 10px;
             font-size: 12px;
-            flex-shrink: 0;
         }
 
         #addBtn:disabled {
@@ -87,12 +99,9 @@
             cursor: not-allowed;
         }
 
-        input[type='checkbox'] {
-            width: 16px;
-            height: 16px;
-            margin: 0;
-            cursor: pointer;
-            flex-shrink: 0;
+        .counter-container {
+            margin-bottom: 20px;
+            padding-left: 2px;
         }
     </style>
 </head>
@@ -100,17 +109,35 @@
 <body>
     <h2>Task Tracker</h2>
     <div class='row'>
-        <input type='text' id='taskText' placeholder='What is the Task?'>
+        <input type='text' id='taskText' placeholder='What is the Task?' maxlength='100'>
         <button id='addBtn' onclick='addTask()' disabled>Add</button>
+    </div>
+    <div class="counter-container">
+        <small id="charCounter">0 / 100 characters</small>
     </div>
     <ul id='list'></ul>
 
     <script>
         const inputField = document.getElementById('taskText');
         const addButton = document.getElementById('addBtn');
+        const charCounter = document.getElementById('charCounter');
+        const maxLength = 100;
 
         // changes- disabling button for empty input
         inputField.addEventListener('input', () => {
+
+            // changes- character counter
+            const currentLength = inputField.value.length;
+            charCounter.textContent = `${currentLength} / ${maxLength} characters`;
+            if (currentLength >= maxLength) {
+                charCounter.style.color = '#dc3545';
+            } else if (currentLength >= maxLength - 20) {
+                charCounter.style.color = '#fd7e14';
+            } else {
+                charCounter.style.color = '#666666';
+            }
+
+            // changes- disabling button for empty input
             addButton.disabled = inputField.value.trim() === '';
         });
 
@@ -129,13 +156,15 @@
             tasks.forEach(t => {
                 const dateObj = new Date(t.createdAt);
                 const formattedTime = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                list.innerHTML += `
-                        <li>
-                            <input type='checkbox' ${t.isCompleted ? 'checked' : ''} onclick='toggleTask("${t.id}")'>
-                            <span class='${t.isCompleted ? 'completed' : ''}'>${t.text}</span>
-                            <span class='task-time'>Created: ${formattedTime}</span>
-                            <button class='del' onclick='deleteTask("${t.id}")'>Delete</button>
-                        </li>`;
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type='checkbox' ${t.isCompleted ? 'checked' : ''} onclick='toggleTask("${t.id}")'>
+                    <span class='task-content ${t.isCompleted ? 'completed' : ''}'></span>
+                    <span class='task-time'>Created: ${formattedTime}</span>
+                    <button class='del' onclick='deleteTask("${t.id}")'>Delete</button>
+                `;
+                li.querySelector('.task-content').textContent = t.text;
+                list.appendChild(li);
             });
         }
 
@@ -147,7 +176,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: input.value })
             });
+            // changes- resetting input and character counter after adding task
             input.value = '';
+            charCounter.textContent = `0 / ${maxLength} characters`;
+            charCounter.style.color = '#666666';
+
             addButton.disabled = true;
             input.focus();
             loadTasks();
